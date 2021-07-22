@@ -1,0 +1,5 @@
+#pragam once
+
+#ifndef @TARGET_NAMESPACE@@TARGET_NAME@Version
+#define @TARGET_NAMESPACE@@TARGET_NAME@Version "@TARGET_VERSION@"
+#endif

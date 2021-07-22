@@ -78,7 +78,7 @@ endif()
 
 # Gaia Framework
 target_include_directories(${TARGET_NAME} PUBLIC "../")
-target_link_libraries(${TARGET_NAME} PUBLIC "GaiaFramework")
+target_link_libraries(${TARGET_NAME} PUBLIC "Framework")
 
 # GTest
 find_package(GTest REQUIRED)
