@@ -53,11 +53,6 @@ endif()
 # Dependencies
 #==============================
 
-# Gaia Background
-find_package(GaiaBackground 0.9)
-target_include_directories(${TARGET_NAME} PUBLIC ${GaiaBackground_INCLUDE_DIRS})
-target_link_libraries(${TARGET_NAME} PUBLIC Gaia::Background)
-
 # Boost
 find_package(Boost 1.65 REQUIRED COMPONENTS system program_options)
 target_include_directories(${TARGET_NAME} PUBLIC ${Boost_INCLUDE_DIRS})
