@@ -153,9 +153,9 @@ namespace Gaia::Framework
         void RemoveSubscription(const std::string& channel_name);
 
         /// Get connection of this service.
-        [[nodiscard]] inline sw::redis::Redis* GetConnection() const noexcept
+        [[nodiscard]] inline const std::shared_ptr<sw::redis::Redis>& GetConnection() const noexcept
         {
-            return Connection.get();
+            return Connection;
         }
         /// Get communicator of this service.
         [[nodiscard]] inline sw::redis::Subscriber* GetCommunicator() const noexcept
