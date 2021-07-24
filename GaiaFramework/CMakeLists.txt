@@ -101,7 +101,7 @@ configure_package_config_file(
 write_basic_package_version_file(
         ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAMESPACE}${TARGET_NAME}ConfigVersion.cmake
         VERSION ${TARGET_VERSION}
-        COMPATIBILITY SameMinorVersion)
+        COMPATIBILITY SameMajorVersion)
 
 # Install executable files and libraries to 'default_path/'.
 install(TARGETS ${TARGET_NAME}

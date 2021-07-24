@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
+find_package(Boost 1.65 REQUIRED COMPONENTS system program_options)
+
 include(@CONFIG_INSTALL_PATH@/@TARGET_NAMESPACE@@TARGET_NAME@ConfigVersion.cmake)
 include(@CONFIG_INSTALL_PATH@/@TARGET_NAMESPACE@@TARGET_NAME@Targets.cmake)
 
