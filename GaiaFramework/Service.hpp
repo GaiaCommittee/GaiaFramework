@@ -43,6 +43,14 @@ namespace Gaia::Framework
         /// Time point of last name service update.
         std::chrono::system_clock::time_point LastHeartBeatTime;
 
+        /**
+         * @brief Enable of this service.
+         * @details
+         *  If false, this service will not be updated frequently,
+         *  and message will not be consumed.
+         */
+        std::atomic_bool Enable {true};
+
     private:
         /// Connection to the Redis server.
         std::shared_ptr<sw::redis::Redis> Connection;
@@ -197,6 +205,12 @@ namespace Gaia::Framework
         virtual void OnInstall() {};
         /// Invoked when uninstall this service.
         virtual void OnUninstall() {};
+
+        /// Invoked when this service is paused.
+        virtual void OnPause() {};
+        /// Invoked when this service is resumed.
+        virtual void OnResume() {};
+
         /**
          * @brief Invoked in every frame.
          * @retval true Launcher should keep program alive.
@@ -213,13 +227,21 @@ namespace Gaia::Framework
     public:
         /// Name of this service.
         const std::string Name;
+
+        /// Check whether this service is enable or not.
+        [[nodiscard]] inline bool IsEnable() const noexcept
+        {
+            return Enable.load();
+        }
         /**
-         * @brief Enable of this service.
+         * @brief Pause this service.
          * @details
-         *  If false, this service will not be updated frequently,
-         *  and message will not be consumed.
+         *  This method will only effect OnUpdate() method,
+         *  and the message loop will keep going on.
          */
-        std::atomic_bool Enable {true};
+        void Pause();
+        /// Resume this service.
+        void Resume();
 
         /**
          * @brief Establish a connection to the Redis server.

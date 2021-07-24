@@ -184,4 +184,18 @@ namespace Gaia::Framework
         std::unique_lock lock(MessageHandlersMutex);
         MessageHandlers.erase(channel_name);
     }
+
+    /// Pause this service.
+    void Service::Pause()
+    {
+        Enable = false;
+        OnPause();
+    }
+
+    /// Resume this service.
+    void Service::Resume()
+    {
+        Enable = true;
+        OnResume();
+    }
 }
