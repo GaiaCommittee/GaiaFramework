@@ -46,6 +46,8 @@ namespace Gaia::Framework
     private:
         /// Connection to the Redis server.
         std::shared_ptr<sw::redis::Redis> Connection;
+        /// Connection that has a very small overtime tolerance, which may throw timeout exception more frequently.
+        std::shared_ptr<sw::redis::Redis> RealtimeConnection;
         /// Communicator for Redis message service.
         std::shared_ptr<sw::redis::Subscriber> Subscriber;
         /// Log service client.

@@ -24,7 +24,7 @@ namespace Gaia::Framework
         auto message_handler = std::async(std::launch::async, [this]{
             try{
                 this->Subscriber->consume();
-            }catch (sw::redis::TimeoutError& error){}
+            }catch (sw::redis::Error& error){}
         });
         if (Enable)
         {
@@ -112,12 +112,13 @@ namespace Gaia::Framework
 
     void Service::Connect(unsigned int port, const std::string &ip)
     {
+        Connection = std::make_shared<sw::redis::Redis>("tcp://" + ip + ":" + std::to_string(port));
         sw::redis::ConnectionOptions options;
         options.host = ip;
         options.port = static_cast<int>(port);
         options.socket_timeout = std::chrono::milliseconds(5);
-        Connection = std::make_shared<sw::redis::Redis>(options);
-        Subscriber = std::make_shared<sw::redis::Subscriber>(Connection->subscriber());
+        RealtimeConnection = std::make_shared<sw::redis::Redis>(options);
+        Subscriber = std::make_shared<sw::redis::Subscriber>(RealtimeConnection->subscriber());
         Subscriber->psubscribe(Name + "/command*");
         Subscriber->on_pmessage([this](
                 const std::string& pattern, const std::string& channel, const std::string& message){
