@@ -51,6 +51,9 @@ namespace Gaia::Framework
          */
         std::atomic_bool Enable {true};
 
+        /// Updater for message pulling loop.
+        Gaia::Background::BackgroundWorker MessageUpdater;
+
     private:
         /// Connection to the Redis server.
         std::shared_ptr<sw::redis::Redis> Connection;

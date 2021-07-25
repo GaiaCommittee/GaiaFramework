@@ -8,7 +8,12 @@
 namespace Gaia::Framework
 {
     /// Reuse a connection to the Redis server.
-    Service::Service(std::string name) : Name(std::move(name))
+    Service::Service(std::string name) : Name(std::move(name)),
+    MessageUpdater([this](const std::atomic_bool& life_flag){
+        while (life_flag.load())
+            try{ this->Subscriber->consume(); }
+            catch (sw::redis::Error& error){}
+    })
     {
         OptionDescription.add_options()
                 ("help,?", "show help message.")
@@ -21,11 +26,6 @@ namespace Gaia::Framework
     /// Update this service.
     bool Service::Update()
     {
-        auto message_handler = std::async(std::launch::async, [this]{
-            try{
-                this->Subscriber->consume();
-            }catch (sw::redis::Error& error){}
-        });
         if (Enable)
         {
             auto current_time = std::chrono::system_clock::now();
@@ -35,8 +35,6 @@ namespace Gaia::Framework
             }
             OnUpdate();
         }
-        message_handler.get();
-
         return LifeFlag.load();
     }
 
@@ -65,12 +63,16 @@ namespace Gaia::Framework
         LastHeartBeatTime = std::chrono::system_clock::now();
 
         OnInstall();
+
+        MessageUpdater.Start();
     }
 
     /// Uninstall this service.
     void Service::Uninstall()
     {
         Enable = false;
+        MessageUpdater.Stop();
+
         OnUninstall();
     }
 
@@ -116,7 +118,7 @@ namespace Gaia::Framework
         sw::redis::ConnectionOptions options;
         options.host = ip;
         options.port = static_cast<int>(port);
-        options.socket_timeout = std::chrono::milliseconds(5);
+        options.socket_timeout = std::chrono::milliseconds(1000);
         RealtimeConnection = std::make_shared<sw::redis::Redis>(options);
         Subscriber = std::make_shared<sw::redis::Subscriber>(RealtimeConnection->subscriber());
         Subscriber->psubscribe(Name + "/command*");
