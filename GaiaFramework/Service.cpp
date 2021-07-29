@@ -11,8 +11,18 @@ namespace Gaia::Framework
     Service::Service(std::string name) : Name(std::move(name)),
     MessageUpdater([this](const std::atomic_bool& life_flag){
         while (life_flag.load())
-            try{ this->Subscriber->consume(); }
+        {
+            try
+            {
+                this->Subscriber->consume();
+                auto current_time = std::chrono::system_clock::now();
+                if (current_time- this->LastHeartBeatTime > std::chrono::seconds(1))
+                {
+                    this->NameResolver->Update();
+                }
+            }
             catch (sw::redis::Error& error){}
+        }
     })
     {
         OptionDescription.add_options()
@@ -28,11 +38,6 @@ namespace Gaia::Framework
     {
         if (Enable)
         {
-            auto current_time = std::chrono::system_clock::now();
-            if (current_time- LastHeartBeatTime > std::chrono::seconds(1))
-            {
-                NameResolver->Update();
-            }
             OnUpdate();
         }
         return LifeFlag.load();
