@@ -195,14 +195,20 @@ namespace Gaia::Framework
     /// Pause this service.
     void Service::Pause()
     {
-        Enable = false;
-        OnPause();
+        if (Enable)
+        {
+            Enable = false;
+            OnPause();
+        }
     }
 
     /// Resume this service.
     void Service::Resume()
     {
-        Enable = true;
-        OnResume();
+        if (!Enable)
+        {
+            Enable = true;
+            OnResume();
+        }
     }
 }
